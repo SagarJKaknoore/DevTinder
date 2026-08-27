@@ -1,44 +1,24 @@
-import express, { type Express, type Request, type Response } from "express";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 const app: Express = express();
 
-app.use(express.json());
+app.use('/users', [(req: Request, res: Response, next: NextFunction) => {
 
-app.get("/user", (req: Request, res: Response) => {
-  res.send("Hello User");
-});
+  console.log(`Request received: ${req.method} ${req.url}`);
+  console.log(`Request headers: ${JSON.stringify(req.headers)}`);
 
-app.post("/user", (req: Request, res: Response) => {
-  res.send("User created");
-});
-
-app.patch("/user", (req: Request, res: Response) => {
-  res.send("User updated");
-});
-
-app.delete("/user", (req: Request, res: Response) => {
-  res.send("User deleted");
+  next(new Error("Error: Something went wrong in the first middleware"));
+  // res.send("Hello, World!");
+}, (err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(`Error occurred: ${err.message}`);
+  //  res.status(500).send("Internal Server Error");
+  next(err);
+}], (err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(`3Request received: ${req.method} ${req.url}`);
+  console.log(`3Request headers: ${JSON.stringify(req.headers)}`);
+  console.error(`3Error occurred: ${err}`);
+  res.send("3rd Hello, World!");
 });
 
 app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-app.get('/', (req: Request, res: Response) => {
-  res.send('root');
-});
-
-app.get('/about', (req: Request, res: Response) => {
-  res.send('about');
-});
-
-app.get('/random.text', (req: Request, res: Response) => {
-  res.send('random.text');
-});
-app.get(/a/, (req: Request, res: Response) => {
-  res.send('/a/');
-});
-app.get(/.*fly$/, (req: Request, res: Response) => {
-  res.send('/.*fly$/');
-});
-app.get('/users/:userId/books/:bookId', (req: Request, res: Response) => {
-  res.send(req.params);
+  console.log("Server is running on port 3000");
 });
