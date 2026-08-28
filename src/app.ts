@@ -1,24 +1,45 @@
-import express, { type Express, type NextFunction, type Request, type Response } from "express";
+import express, {
+  type Express,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
+
+import { adminMiddleWare,userMiddleWare } from "./middleware/auth.ts";
+
 const app: Express = express();
 
-app.use('/users', [(req: Request, res: Response, next: NextFunction) => {
+app.get(
+  "/admin/getAllData",
+  adminMiddleWare,
+  (req: Request, res: Response, next: NextFunction) => {
+    res.send("All User Data fetched successfully");
+  }
+);
 
-  console.log(`Request received: ${req.method} ${req.url}`);
-  console.log(`Request headers: ${JSON.stringify(req.headers)}`);
+app.delete(
+  "/admin/deleteUser/:id",
+  adminMiddleWare,
+  (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    res.send(`User with ID ${userId} deleted successfully`);
+  }
+);
 
-  next(new Error("Error: Something went wrong in the first middleware"));
-  // res.send("Hello, World!");
-}, (err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(`Error occurred: ${err.message}`);
-  //  res.status(500).send("Internal Server Error");
-  next(err);
-}], (err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log(`3Request received: ${req.method} ${req.url}`);
-  console.log(`3Request headers: ${JSON.stringify(req.headers)}`);
-  console.error(`3Error occurred: ${err}`);
-  res.send("3rd Hello, World!");
+app.post(
+  "/admin/addUser",
+  adminMiddleWare,
+  (req: Request, res: Response, next: NextFunction) => {
+    res.send("New User added successfully");
+  }
+);
+
+app.post('/user/login', (req: Request, res: Response, next: NextFunction) => {
+  res.send("User logged in successfully");
 });
-
+app.get('/user/getProfile', userMiddleWare, (req: Request, res: Response, next: NextFunction) => {
+  res.send("User profile fetched successfully");
+});
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
