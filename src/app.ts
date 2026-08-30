@@ -5,7 +5,7 @@ import express, {
   type Response,
 } from "express";
 
-import { adminMiddleWare,userMiddleWare } from "./middleware/auth.ts";
+import { adminMiddleWare, userMiddleWare } from "./middleware/auth.ts";
 
 const app: Express = express();
 
@@ -40,6 +40,14 @@ app.post('/user/login', (req: Request, res: Response, next: NextFunction) => {
 app.get('/user/getProfile', userMiddleWare, (req: Request, res: Response, next: NextFunction) => {
   res.send("User profile fetched successfully");
 });
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error"
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
